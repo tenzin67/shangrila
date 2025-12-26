@@ -23,7 +23,7 @@ export default function Navbar({ auth, cartCount = 0, onOpenCart }) {
                     {/* Logo */}
                     <Link href="/" className="group">
                         <span className="font-serif text-2xl font-bold text-gray-900 tracking-tighter group-hover:text-primary transition-colors">
-                            AKHU<span className="text-primary">.</span>
+                            Shangrila<span className="text-primary">.</span>
                         </span>
                     </Link>
 

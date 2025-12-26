@@ -1,5 +1,5 @@
 import React from 'react';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import Navbar from '@/Components/Navbar';
 import ProductCard from '@/Components/ProductCard';
 import CategoryCard from '@/Components/CategoryCard';
@@ -75,6 +75,18 @@ export default function Home({ auth }) {
         removeFromCart,
         cartCount
     } = useCart();
+
+    const { data: form, setData, post, processing, errors, reset, recentlySuccessful } = useForm({
+        email: '',
+    });
+
+    const handleSubscribe = (e) => {
+        e.preventDefault();
+        post(route('subscribe'), {
+            preserveScroll: true,
+            onSuccess: () => reset(),
+        });
+    };
 
     return (
         <div className="min-h-screen bg-white font-sans text-gray-900 pb-20">
@@ -314,10 +326,36 @@ export default function Home({ auth }) {
                     </div>
                     <h2 className="text-3xl font-serif font-bold text-gray-900 mb-4">Join our community</h2>
                     <p className="text-gray-500 mb-8">Get weekly recipes, sustainable living tips, and exclusive offers.</p>
-                    <div className="flex max-w-md mx-auto">
-                        <input type="email" placeholder="Your email address" className="flex-1 rounded-l-full border-gray-200 focus:border-primary focus:ring-primary py-3 px-6" />
-                        <button className="bg-primary text-white px-8 rounded-r-full font-bold hover:bg-dark transition-colors">Subscribe</button>
-                    </div>
+                    <form onSubmit={handleSubscribe} className="flex flex-col max-w-md mx-auto">
+                        <div className="flex">
+                            <input
+                                type="email"
+                                placeholder="Your email address"
+                                value={form.email}
+                                onChange={e => setData('email', e.target.value)}
+                                disabled={processing}
+                                className={`flex-1 rounded-l-full border-gray-200 focus:border-primary focus:ring-primary py-3 px-6 ${errors.email ? 'border-red-500' : ''}`}
+                            />
+                            <button
+                                type="submit"
+                                disabled={processing}
+                                className="bg-primary text-white px-8 rounded-r-full font-bold hover:bg-dark transition-colors disabled:opacity-75 disabled:cursor-not-allowed"
+                            >
+                                {processing ? '...' : 'Subscribe'}
+                            </button>
+                        </div>
+                        {errors.email && (
+                            <div className="text-red-500 text-sm mt-2 text-left px-2">
+                                {errors.email}
+                            </div>
+                        )}
+                        {recentlySuccessful && (
+                            <div className="text-emerald-600 text-sm mt-2 text-left px-2 font-medium">
+                                Thanks for subscribing! You’ll receive grocery deals & café updates.
+                            </div>
+                        )}
+                    </form>
+
                 </div>
             </div>
 
@@ -326,9 +364,9 @@ export default function Home({ auth }) {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
                     <div className="mb-4 md:mb-0">
                         <span className="font-serif text-xl font-bold text-gray-900 tracking-tighter">
-                            AKHU<span className="text-primary">.</span>
+                            Shangrila<span className="text-primary">.</span>
                         </span>
-                        <p className="text-xs text-gray-400 mt-1">&copy; 2024 AKHU Grocery & Cafe.</p>
+                        <p className="text-xs text-gray-400 mt-1">&copy; 2024 Shangrila Grocery & Cafe.</p>
                     </div>
                     <div className="flex space-x-8 text-sm font-medium text-gray-500">
                         <a href="#" className="hover:text-primary transition-colors">Instagram</a>

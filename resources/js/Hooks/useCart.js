@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { usePage } from '@inertiajs/react';
 
-const STORAGE_PREFIX = 'akhu_cart';
+const STORAGE_PREFIX = 'shangrila_cart';
 
 export function useCart() {
     const { props } = usePage();

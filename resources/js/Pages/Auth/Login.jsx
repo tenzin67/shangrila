@@ -84,7 +84,7 @@ export default function Login({ status, canResetPassword }) {
                     <div className="text-center lg:text-left">
                         <Link href="/" className="inline-block mb-8">
                             <span className="font-serif text-3xl font-bold text-gray-900 tracking-tighter">
-                                AKHU<span className="text-[#00A86B]">.</span>
+                                Shangrila<span className="text-[#00A86B]">.</span>
                             </span>
                         </Link>
                         <h2 className="text-3xl font-bold text-gray-900">Sign in to your account</h2>

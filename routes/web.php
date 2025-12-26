@@ -44,4 +44,6 @@ Route::middleware('auth')->group(function () {
     });
 });
 
+Route::post('/subscribe', [App\Http\Controllers\SubscriberController::class, 'store'])->name('subscribe');
+
 require __DIR__ . '/auth.php';

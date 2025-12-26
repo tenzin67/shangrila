@@ -14,7 +14,7 @@ export default function About({ auth }) {
 
                     <div className="prose prose-lg mx-auto text-gray-600">
                         <p className="mb-6">
-                            Founded with a passion for bridging cultures, <strong>AKHU</strong> brings the finest Japanese ingredients and California's fresh produce together under one roof.
+                            Founded with a passion for bridging cultures, <strong>Shangrila</strong> brings the finest Japanese ingredients and California's fresh produce together under one roof.
                         </p>
                         <p className="mb-6">
                             What started as a small neighborhood grocer has grown into a community hub where you can find authentic miso, ceremonial matcha, and locally sourced organic vegetables.
