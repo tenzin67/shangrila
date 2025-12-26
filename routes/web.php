@@ -14,6 +14,18 @@ Route::get('/', function () {
     ]);
 });
 
+Route::get('/shop', function () {
+    return Inertia::render('Shop');
+});
+
+Route::get('/cafe', function () {
+    return Inertia::render('Cafe');
+});
+
+Route::get('/about', function () {
+    return Inertia::render('About');
+});
+
 // Route::get('/Home', function () {
 //     return Inertia::render('Home');
 // })->middleware(['auth', 'verified'])->name('hashboard');
