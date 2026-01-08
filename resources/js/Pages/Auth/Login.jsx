@@ -3,13 +3,24 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import { Head, Link, useForm, usePage, router } from '@inertiajs/react'; // Added usePage, router
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 export default function Login({ status, canResetPassword }) {
+    const { auth } = usePage().props; // Get auth from shared props
     const [loginMethod, setLoginMethod] = useState('email'); // 'email' or 'phone'
     const [otpSent, setOtpSent] = useState(false);
+
+    useEffect(() => {
+        if (auth?.user) {
+            if (auth.user.is_admin) {
+                router.visit(route('admin.dashboard'), { replace: true });
+            } else {
+                router.visit('/', { replace: true });
+            }
+        }
+    }, [auth]);
 
     // Email Login Form
     const emailForm = useForm({
@@ -27,6 +38,7 @@ export default function Login({ status, canResetPassword }) {
     const submitEmail = (e) => {
         e.preventDefault();
         emailForm.post(route('login'), {
+            replace: true,
             onFinish: () => emailForm.reset('password'),
         });
     };
@@ -53,6 +65,7 @@ export default function Login({ status, canResetPassword }) {
     const verifyOtp = (e) => {
         e.preventDefault();
         phoneForm.post(route('otp.verify'), {
+            replace: true,
             preserveScroll: true,
             onError: () => {
                 // specific error handling if needed

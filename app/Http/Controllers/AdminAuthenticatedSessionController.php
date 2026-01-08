@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -11,11 +10,8 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class AuthenticatedSessionController extends Controller
+class AdminAuthenticatedSessionController extends Controller
 {
-    /**
-     * Display the login view.
-     */
     /**
      * Display the login view.
      */
@@ -28,8 +24,7 @@ class AuthenticatedSessionController extends Controller
             return redirect('/');
         }
 
-        return Inertia::render('Auth/Login', [
-            'canResetPassword' => Route::has('password.request'),
+        return Inertia::render('Auth/AdminLogin', [
             'status' => session('status'),
         ])->withViewData([
                     'meta' => [
@@ -48,7 +43,17 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended('/');
+        if (!$request->user()->is_admin) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return back()->withErrors([
+                'email' => 'You do not have administrative access.',
+            ]);
+        }
+
+        return redirect()->intended(route('admin.dashboard'));
     }
 
     /**
@@ -62,6 +67,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/admin/login');
     }
 }

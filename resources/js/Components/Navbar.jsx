@@ -1,10 +1,32 @@
-import React from 'react';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, usePage, router } from '@inertiajs/react';
+import { useState, useRef } from 'react';
 import ProfileModal from './ProfileModal';
 
 export default function Navbar({ auth, cartCount = 0, onOpenCart }) {
     const { url } = usePage();
-    const [isProfileOpen, setIsProfileOpen] = React.useState(false);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const searchInputRef = useRef(null);
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (!searchQuery.trim()) return;
+
+        router.visit(route('shop'), {
+            method: 'get',
+            data: { q: searchQuery },
+            preserveState: false,
+            preserveScroll: true,
+        });
+    };
+
+    const toggleSearch = () => {
+        setIsSearchOpen(!isSearchOpen);
+        if (!isSearchOpen) {
+            setTimeout(() => searchInputRef.current?.focus(), 100);
+        }
+    };
 
     // Helper to determine link class
     const getLinkClass = (path) => {
@@ -36,12 +58,36 @@ export default function Navbar({ auth, cartCount = 0, onOpenCart }) {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center space-x-4">
-                        <button className="text-gray-400 hover:text-primary transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                        </button>
+                    <div className="flex items-center space-x-4 ">
+                        {isSearchOpen ? (
+                            <form onSubmit={handleSearch} className="relative">
+                                <input
+                                    ref={searchInputRef}
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    placeholder="Search..."
+                                    className="w-48 pl-4 pr-10 py-2 text-sm border border-gray-300 rounded-full focus:border-primary focus:outline-none bg-transparent transition-all"
+                                    onBlur={() => {
+                                        if (!searchQuery) setIsSearchOpen(false);
+                                    }}
+                                />
+                                <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </button>
+                            </form>
+                        ) : (
+                            <button
+                                onClick={toggleSearch}
+                                className="text-gray-400 hover:text-primary transition-colors"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </button>
+                        )}
                         <div className="w-px h-6 bg-gray-200 mx-2"></div>
                         <button
                             onClick={onOpenCart}

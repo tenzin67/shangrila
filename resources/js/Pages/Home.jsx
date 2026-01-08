@@ -7,64 +7,9 @@ import CategoryCard from '@/Components/CategoryCard';
 import CartSidebar from '@/Components/CartSidebar';
 import { useCart } from '@/Hooks/useCart';
 
-export default function Home({ auth }) {
-    const featuredProducts = [
-        {
-            id: 1,
-            name: 'Organic Matcha',
-            category: 'Tea',
-            jpCategory: '抹茶',
-            price: 24.00,
-            unit: '30g',
-            image: 'https://images.unsplash.com/photo-1582793141158-47c109723871?auto=format&fit=crop&q=80&w=600',
-            badge: 'Limited',
-            description: 'Premium ceremonial grade matcha.'
-        },
-        {
-            id: 2,
-            name: 'White Miso',
-            category: 'Pantry',
-            jpCategory: '味噌',
-            price: 12.50,
-            unit: '500g',
-            image: 'https://images.unsplash.com/photo-1604153922849-015822f67272?auto=format&fit=crop&q=80&w=600',
-            description: 'Sweet fermented soybean paste.'
-        },
-        {
-            id: 3,
-            name: 'Yuzu Citrus',
-            category: 'Fresh Produce',
-            jpCategory: '柚子',
-            price: 8.00,
-            unit: '3 pcs',
-            image: 'https://images.unsplash.com/photo-1621458237353-44f37803e9e1?auto=format&fit=crop&q=80&w=600',
-            badge: 'New',
-            description: 'Aromatic citrus fruit.'
-        },
-    ];
-
-    const additionalProducts = [
-        {
-            id: 4,
-            name: 'Leafy Spinach',
-            category: 'Vegetables',
-            jpCategory: 'ほうれん草',
-            price: 4.50,
-            unit: 'Bundle',
-            image: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?auto=format&fit=crop&q=80&w=600',
-            description: 'Fresh organic spinach from local farms.'
-        },
-        {
-            id: 5,
-            name: 'Soba Noodles',
-            category: 'Pantry',
-            jpCategory: '蕎麦',
-            price: 6.00,
-            unit: '300g',
-            image: 'https://images.unsplash.com/photo-1552611052-33e04de081de?auto=format&fit=crop&q=80&w=600',
-            description: 'Buckwheat noodles, perfect for hot or cold dishes.'
-        },
-    ];
+export default function Home({ auth, products: dbProducts = [] }) {
+    // Use first 8 products from database for display
+    const displayProducts = dbProducts.slice(0, 8);
 
     const {
         cart,
@@ -214,50 +159,20 @@ export default function Home({ auth }) {
                     <span className="text-emerald-500 font-bold">商品</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <ProductCard
-                        product={{
-                            id: 'sp-1',
-                            name: 'Organic Vegetables',
-                            jpCategory: '有機野菜',
-                            price: 6.80,
-                            unit: '500g',
-                            image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&q=80&w=600'
-                        }}
-                        onAddToCart={addToCart}
-                    />
-                    <ProductCard
-                        product={{
-                            id: 'sp-2',
-                            name: 'Premium Rice',
-                            jpCategory: 'プレミアム米',
-                            price: 12.00,
-                            unit: '1kg',
-                            image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=600'
-                        }}
-                        onAddToCart={addToCart}
-                    />
-                    <ProductCard
-                        product={{
-                            id: 'sp-3',
-                            name: 'Sencha Green Tea',
-                            jpCategory: '煎茶',
-                            price: 8.50,
-                            unit: '100g',
-                            image: 'https://images.unsplash.com/photo-1627435601361-ec25f5b1d0e5?auto=format&fit=crop&q=80&w=600'
-                        }}
-                        onAddToCart={addToCart}
-                    />
-                    <ProductCard
-                        product={{
-                            id: 'sp-4',
-                            name: 'Silken Tofu',
-                            jpCategory: '絹豆腐',
-                            price: 3.20,
-                            unit: '400g',
-                            image: 'https://images.unsplash.com/photo-1576618148400-f54bed99fcf8?auto=format&fit=crop&q=80&w=600'
-                        }}
-                        onAddToCart={addToCart}
-                    />
+                    {displayProducts.slice(0, 4).map((product) => (
+                        <ProductCard
+                            key={product.id}
+                            product={{
+                                id: product.id,
+                                name: product.name,
+                                jpCategory: product.japanese_name,
+                                price: product.price / 100, // Convert from cents if needed, or adjust based on your price format
+                                unit: product.unit,
+                                image: product.image_url
+                            }}
+                            onAddToCart={addToCart}
+                        />
+                    ))}
                 </div>
             </div>
 
@@ -310,8 +225,19 @@ export default function Home({ auth }) {
                     <Link href="/shop" className="text-primary font-bold text-sm hover:underline">View All</Link>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
-                    {[...additionalProducts, ...featuredProducts].slice(0, 4).map(product => (
-                        <ProductCard key={`w-${product.id}`} product={product} onAddToCart={addToCart} />
+                    {displayProducts.slice(4, 8).map((product) => (
+                        <ProductCard
+                            key={product.id}
+                            product={{
+                                id: product.id,
+                                name: product.name,
+                                jpCategory: product.japanese_name,
+                                price: product.price / 100,
+                                unit: product.unit,
+                                image: product.image_url
+                            }}
+                            onAddToCart={addToCart}
+                        />
                     ))}
                 </div>
             </div>
