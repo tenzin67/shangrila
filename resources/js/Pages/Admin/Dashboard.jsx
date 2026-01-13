@@ -75,7 +75,7 @@ export default function Dashboard({ auth, products: initialProducts }) {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                             </svg>
                             <div>
-                                <h3 className="text-4xl font-bold">¥{totalValue.toLocaleString()}</h3>
+                                <h3 className="text-4xl font-bold">${(totalValue / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
                                 <p className="text-sm font-medium opacity-90 mt-1">Total Inventory Value</p>
                             </div>
                         </div>

@@ -1,49 +1,64 @@
 import React, { useState } from 'react';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import Navbar from '@/Components/Navbar';
 import { useCart } from '@/Hooks/useCart';
 
-export default function Checkout({ auth }) {
+export default function Checkout({ auth, addresses = [] }) {
     const { cart, cartTotal, setIsCartOpen, cartCount } = useCart();
 
-    // Form state
-    const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        address: '',
-        city: '',
-        zip: ''
+    // Find default address to prefill
+    const defaultAddress = addresses.find(a => a.is_default) || addresses[0];
+
+    const { data, setData, post, processing, errors } = useForm({
+        customer_name: auth.user?.name || '',
+        customer_email: auth.user?.email || '',
+        customer_phone: auth.user?.phone || '',
+        address: defaultAddress?.address || '',
+        city: defaultAddress?.city || '',
+        zip: defaultAddress?.zip || '',
+        cart: cart,
+        total: cartTotal,
+        delivery_date: '',
+        delivery_time_slot: '',
     });
 
     const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
+        setData(e.target.name, e.target.value);
+    };
+
+    const handleAddressSelect = (addressId) => {
+        const address = addresses.find(a => a.id === parseInt(addressId));
+        if (address) {
+            setData((data) => ({
+                ...data,
+                address: address.address,
+                city: address.city,
+                zip: address.zip
+            }));
+        }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Here you would normally submit to backend
-        // For now, redirect to success page
-        window.location.href = '/order-success';
+        post(route('orders.store'), {
+            preserveScroll: true,
+            onSuccess: () => {
+                // Cart clearing is handled by the success page or manual clear if needed
+                // But for now, we rely on the redirect
+            },
+        });
     };
 
-    if (cart.length === 0) {
-        return (
-            <div className="min-h-screen bg-white">
-                <Navbar auth={auth} cartCount={cartCount} onOpenCart={() => setIsCartOpen(true)} />
-                <div className="max-w-7xl mx-auto px-4 py-20 text-center">
-                    <h1 className="text-3xl font-bold mb-6">Your cart is empty</h1>
-                    <Link href="/shop" className="inline-block bg-primary text-white px-8 py-3 rounded-xl font-bold">
-                        Continue Shopping
-                    </Link>
-                </div>
-            </div>
-        );
-    }
+    // Sync form data with cart when it loads
+    React.useEffect(() => {
+        setData(data => ({
+            ...data,
+            cart: cart,
+            total: cartTotal
+        }));
+    }, [cart, cartTotal]);
+
+    // ... existing empty cart check ...
 
     return (
         <div className="min-h-screen bg-gray-50 font-sans text-gray-900 pb-20">
@@ -57,69 +72,133 @@ export default function Checkout({ auth }) {
                 <div className="flex flex-col lg:flex-row gap-10">
                     {/* Checkout Form */}
                     <div className="flex-1">
+                        {errors.error && (
+                            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6">
+                                {errors.error}
+                            </div>
+                        )}
+                        {errors.cart && (
+                            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6">
+                                Your cart is empty or invalid. Please add items to your cart.
+                            </div>
+                        )}
                         <form onSubmit={handleSubmit} className="space-y-8">
 
                             {/* Contact Info */}
                             <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
                                 <h2 className="text-xl font-bold mb-6">Contact Information</h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 gap-6">
+                                    {/* ... existing contact inputs ... */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
                                         <input
-                                            required name="firstName" value={formData.firstName} onChange={handleChange}
+                                            required name="customer_name" value={data.customer_name} onChange={handleChange}
                                             className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary"
                                         />
+                                        {errors.customer_name && <p className="text-red-500 text-sm mt-1">{errors.customer_name}</p>}
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                                        <input
-                                            required name="lastName" value={formData.lastName} onChange={handleChange}
-                                            className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary"
-                                        />
-                                    </div>
-                                    <div className="md:col-span-2">
                                         <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                                         <input
-                                            required type="email" name="email" value={formData.email} onChange={handleChange}
+                                            required type="email" name="customer_email" value={data.customer_email} onChange={handleChange}
                                             className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary"
                                         />
+                                        {errors.customer_email && <p className="text-red-500 text-sm mt-1">{errors.customer_email}</p>}
                                     </div>
-                                    <div className="md:col-span-2">
+                                    <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
                                         <input
-                                            name="phone" value={formData.phone} onChange={handleChange}
+                                            name="customer_phone" value={data.customer_phone} onChange={handleChange}
                                             className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary"
                                         />
+                                        {errors.customer_phone && <p className="text-red-500 text-sm mt-1">{errors.customer_phone}</p>}
                                     </div>
                                 </div>
                             </div>
 
                             {/* Shipping Address */}
                             <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-                                <h2 className="text-xl font-bold mb-6">Shipping Address</h2>
+                                <div className="flex justify-between items-center mb-6">
+                                    <h2 className="text-xl font-bold">Shipping Address</h2>
+                                    {addresses.length > 0 && (
+                                        <select
+                                            onChange={(e) => handleAddressSelect(e.target.value)}
+                                            className="text-sm border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                                            defaultValue=""
+                                        >
+                                            <option value="" disabled>Select saved address...</option>
+                                            {addresses.map(addr => (
+                                                <option key={addr.id} value={addr.id}>
+                                                    {addr.label ? `${addr.label} - ` : ''}{addr.address}, {addr.city}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    )}
+                                </div>
+
                                 <div className="space-y-6">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
                                         <input
-                                            required name="address" value={formData.address} onChange={handleChange}
+                                            required name="address" value={data.address} onChange={handleChange}
                                             className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary"
                                         />
+                                        {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
                                     </div>
                                     <div className="grid grid-cols-2 gap-6">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
                                             <input
-                                                required name="city" value={formData.city} onChange={handleChange}
+                                                required name="city" value={data.city} onChange={handleChange}
                                                 className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary"
                                             />
+                                            {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city}</p>}
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">ZIP / Postal Code</label>
                                             <input
-                                                required name="zip" value={formData.zip} onChange={handleChange}
+                                                required name="zip" value={data.zip} onChange={handleChange}
                                                 className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary"
                                             />
+                                            {errors.zip && <p className="text-red-500 text-sm mt-1">{errors.zip}</p>}
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Delivery Schedule */}
+                            <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                                <h2 className="text-xl font-bold mb-6">Delivery Schedule</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Date</label>
+                                        <input
+                                            required
+                                            type="date"
+                                            name="delivery_date"
+                                            value={data.delivery_date}
+                                            onChange={handleChange}
+                                            min={new Date().toISOString().split('T')[0]}
+                                            className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary"
+                                        />
+                                        {errors.delivery_date && <p className="text-red-500 text-sm mt-1">{errors.delivery_date}</p>}
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Time Slot</label>
+                                        <select
+                                            required
+                                            name="delivery_time_slot"
+                                            value={data.delivery_time_slot}
+                                            onChange={handleChange}
+                                            className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary"
+                                        >
+                                            <option value="">Select a time slot...</option>
+                                            <option value="09:00 - 12:00">Morning (09:00 - 12:00)</option>
+                                            <option value="12:00 - 15:00">Afternoon (12:00 - 15:00)</option>
+                                            <option value="15:00 - 18:00">Late Afternoon (15:00 - 18:00)</option>
+                                            <option value="18:00 - 21:00">Evening (18:00 - 21:00)</option>
+                                        </select>
+                                        {errors.delivery_time_slot && <p className="text-red-500 text-sm mt-1">{errors.delivery_time_slot}</p>}
                                     </div>
                                 </div>
                             </div>
@@ -139,8 +218,8 @@ export default function Checkout({ auth }) {
                                 </div>
                             </div>
 
-                            <button type="submit" className="w-full bg-primary text-white font-bold py-4 rounded-xl shadow-lg hover:bg-green-700 transition-colors">
-                                Place Order
+                            <button type="submit" disabled={processing} className="w-full bg-primary text-white font-bold py-4 rounded-xl shadow-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                {processing ? 'Processing...' : 'Place Order'}
                             </button>
                         </form>
                     </div>

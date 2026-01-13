@@ -17,14 +17,15 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'japanese_name' => 'required|string|max:255',
-            'price' => 'required|integer|min:0',
+            'price' => 'required|numeric|min:0',
             'unit' => 'required|string|max:50',
             'category' => 'required|string|max:50',
             'stock_quantity' => 'required|integer|min:0',
             'low_stock_threshold' => 'nullable|integer|min:0',
             'image_url' => 'required|url',
         ]);
+
+        $validated['price'] = (int) ($validated['price'] * 100);
 
         Product::create($validated);
 
@@ -37,14 +38,15 @@ class ProductController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'japanese_name' => 'required|string|max:255',
-            'price' => 'required|integer|min:0',
+            'price' => 'required|numeric|min:0',
             'unit' => 'required|string|max:50',
             'category' => 'required|string|max:50',
             'stock_quantity' => 'required|integer|min:0',
             'low_stock_threshold' => 'nullable|integer|min:0',
             'image_url' => 'required|url',
         ]);
+
+        $validated['price'] = (int) ($validated['price'] * 100);
 
         $product->update($validated);
 

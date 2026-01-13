@@ -1,10 +1,8 @@
 import { Link, usePage, router } from '@inertiajs/react';
 import { useState, useRef } from 'react';
-import ProfileModal from './ProfileModal';
 
 export default function Navbar({ auth, cartCount = 0, onOpenCart }) {
     const { url } = usePage();
-    const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const searchInputRef = useRef(null);
@@ -104,19 +102,12 @@ export default function Navbar({ auth, cartCount = 0, onOpenCart }) {
 
                         {auth?.user ? (
                             <div className="relative ml-4">
-                                <button
-                                    onClick={() => setIsProfileOpen(!isProfileOpen)}
-                                    className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-primary font-bold text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                                <Link
+                                    href={route('profile.edit')}
+                                    className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-primary font-bold text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary hover:bg-secondary/80 transition-colors"
                                 >
                                     {auth.user.name.charAt(0)}
-                                </button>
-
-                                {isProfileOpen && (
-                                    <ProfileModal
-                                        user={auth.user}
-                                        onClose={() => setIsProfileOpen(false)}
-                                    />
-                                )}
+                                </Link>
                             </div>
                         ) : (
                             <Link href="/login" className="ml-4 text-sm font-bold text-gray-900 hover:text-primary">

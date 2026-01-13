@@ -4,7 +4,6 @@ import { useForm } from '@inertiajs/react';
 export default function AddProductForm({ onClose }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
-        japanese_name: '',
         price: '',
         unit: '',
         category: '',
@@ -56,31 +55,18 @@ export default function AddProductForm({ onClose }) {
                         {errors.name && <div className="text-red-500 text-xs mt-1">{errors.name}</div>}
                     </div>
 
-                    {/* Japanese Name */}
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-2">
-                            Japanese Name *
-                        </label>
-                        <input
-                            type="text"
-                            value={data.japanese_name}
-                            onChange={e => setData('japanese_name', e.target.value)}
-                            placeholder="e.g., プレミアム米"
-                            className={`w-full rounded-xl border ${errors.japanese_name ? 'border-red-500' : 'border-gray-200'} px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-[#00C48C] focus:ring-1 focus:ring-[#00C48C] outline-none transition-all`}
-                        />
-                        {errors.japanese_name && <div className="text-red-500 text-xs mt-1">{errors.japanese_name}</div>}
-                    </div>
+
 
                     {/* Price */}
                     <div>
                         <label className="block text-sm font-bold text-gray-700 mb-2">
-                            Price (¥) *
+                            Price ($) *
                         </label>
                         <input
                             type="number"
                             value={data.price}
                             onChange={e => setData('price', e.target.value)}
-                            placeholder="e.g., 1200"
+                            placeholder="e.g., 12.00"
                             className={`w-full rounded-xl border ${errors.price ? 'border-red-500' : 'border-gray-200'} px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-[#00C48C] focus:ring-1 focus:ring-[#00C48C] outline-none transition-all`}
                         />
                         {errors.price && <div className="text-red-500 text-xs mt-1">{errors.price}</div>}

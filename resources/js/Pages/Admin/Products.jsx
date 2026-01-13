@@ -32,8 +32,7 @@ export default function Products({ auth, products: initialProducts }) {
     // Filter products by category and search
     const displayProducts = products.filter(product => {
         const matchesCategory = activeCategory === 'All' || product.category === activeCategory;
-        const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            product.japanese_name.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
         return matchesCategory && matchesSearch;
     });
 
@@ -162,7 +161,7 @@ export default function Products({ auth, products: initialProducts }) {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm font-medium text-gray-500">Inventory Value</p>
-                                <h3 className="text-3xl font-bold text-gray-900 mt-2">¥{totalValue.toLocaleString()}</h3>
+                                <h3 className="text-3xl font-bold text-gray-900 mt-2">${(totalValue / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
                             </div>
                             <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -231,7 +230,7 @@ export default function Products({ auth, products: initialProducts }) {
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Search products by name or Japanese name..."
+                            placeholder="Search products by name..."
                             className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#00C48C] focus:border-[#00C48C] sm:text-sm shadow-sm transition-shadow"
                         />
                     </div>
@@ -261,7 +260,6 @@ export default function Products({ auth, products: initialProducts }) {
                                                 </div>
                                                 <div className="ml-4">
                                                     <div className="text-sm font-semibold text-gray-900">{product.name}</div>
-                                                    <div className="text-xs text-gray-400 mt-0.5">{product.japanese_name}</div>
                                                 </div>
                                             </div>
                                         </td>
@@ -271,7 +269,7 @@ export default function Products({ auth, products: initialProducts }) {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm font-bold text-gray-900">¥{product.price}</div>
+                                            <div className="text-sm font-bold text-gray-900">${(product.price / 100).toFixed(2)}</div>
                                             <div className="text-xs text-gray-500">{product.unit}</div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">

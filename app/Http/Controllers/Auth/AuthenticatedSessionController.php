@@ -46,6 +46,17 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
+        // Check if user is an admin
+        if ($request->user()->is_admin) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return back()->withErrors([
+                'email' => 'Admin users must login through the admin portal at /admin/login',
+            ]);
+        }
+
         $request->session()->regenerate();
 
         return redirect()->intended('/');

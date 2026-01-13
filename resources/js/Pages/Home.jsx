@@ -165,7 +165,6 @@ export default function Home({ auth, products: dbProducts = [] }) {
                             product={{
                                 id: product.id,
                                 name: product.name,
-                                jpCategory: product.japanese_name,
                                 price: product.price / 100, // Convert from cents if needed, or adjust based on your price format
                                 unit: product.unit,
                                 image: product.image_url
@@ -231,7 +230,6 @@ export default function Home({ auth, products: dbProducts = [] }) {
                             product={{
                                 id: product.id,
                                 name: product.name,
-                                jpCategory: product.japanese_name,
                                 price: product.price / 100,
                                 unit: product.unit,
                                 image: product.image_url
